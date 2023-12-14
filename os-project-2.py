@@ -33,6 +33,8 @@ dict_save={}
 y_author=[]
 y_image=[]
 y_category=[]
+y_title=[]
+y_tag=[]
 
 if re.findall('https://isorepublic.com/photo/.+/"',soup.prettify()):
     list_save.append(re.findall('https://isorepublic.com/photo/.+/"',soup.prettify()))
@@ -50,22 +52,24 @@ for item in range(len(list_save)):
         y_image.append(re.findall('href="https://isorepublic.com/wp-content/uploads.+.jpg',soup1.prettify()))
         y_author.append(re.findall('https://isorepublic.com/media-author.+" ',soup1.prettify()))
         y_category.append(re.findall('href="https://isorepublic.com/media-category.+/"',soup1.prettify()))
+        mat=re.search('<h1>.*</h1>',soup1.prettify(),re.DOTALL)
+        y_title.append(mat.group(0))
+        mat2=re.search('<ul class="keyword-tags".+</section>',soup1.prettify(),re.DOTALL)
+        y_tag.append(mat2.group(0))
         dict_save[y_author[item][0]]=y_image[item][0]
 
 #-------------------------in ghesmat bad moshakhasat ti file save mikona
   
-header=['category','author','tag','url']
+header=['category','author','title','url','tag']
 
 for item1 in range(len(list_save)):
-    data=[y_category[item1][0][45:-3],y_author[item1][0][37:-2],y_author[item1][0][37:-2],y_image[item1][0][6:]]
+    data=[y_category[item1][0][45:-3],y_author[item1][0][37:-2], y_title[item1],y_image[item1][0][6:],y_tag[item1]]
     with open('inform.csv', 'a', encoding='UTF8') as f5:
         writer = csv.writer(f5)
         writer.writerow(header)
         writer.writerow(data)
         
-#print(y_category)
-# az inja be bad dige sakht poshe v download photo ast
-#sakht thread baray download
+
 list_check_not_reapeat_folder=[]
 t1=threading.Thread(target=download,args=(dict_save,list_check_not_reapeat_folder))
 t1.start()
